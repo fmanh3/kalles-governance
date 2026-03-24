@@ -47,6 +47,13 @@ The selected controls represent the most critical security considerations for ou
 
 ---
 
+#### **A.5.19 Information security in supplier relationships**
+
+*   **Objective:** To agree on and document the information security requirements for mitigating the risks associated with supplier's access to the organization's assets.
+*   **Policy Statement:** Kalles Buss relies heavily on external data providers (e.g., Trafiklab, Samtrafiken, SL) and physical infrastructure partners (e.g., external depots, charging stations). All integrations must employ zero-trust principles. Agents must validate and sanitize all incoming external data and maintain fallback mechanisms for critical operational data to ensure resilience against third-party compromise or outages.
+
+---
+
 #### **A.5.23 Information security for use of cloud services**
 
 *   **Objective:** To establish requirements for securing the use of cloud services to protect the organization's information.
@@ -54,10 +61,46 @@ The selected controls represent the most critical security considerations for ou
 
 ---
 
+#### **A.5.24 Information security incident management planning and preparation**
+
+*   **Objective:** To plan and prepare for managing information security incidents effectively.
+*   **Policy Statement:** Automated incident response playbooks shall be defined as code. In the event of a compromised or malfunctioning autonomous agent, the platform must support automated "kill switches" to isolate the rogue agent and instantly revert affected operations to "Shadow Mode" or a known-good baseline, minimizing impact on the physical bus fleet.
+
+---
+
 #### **A.5.30 ICT readiness for business continuity**
 
 *   **Objective:** To ensure the availability of information and communication technology (ICT) and the resilience of systems to disruption.
 *   **Policy Statement:** The Kalles Buss platform will be designed for high availability and disaster recovery, leveraging the resilience capabilities of the underlying cloud provider. Critical services will be deployed across multiple availability zones. Recovery Time Objectives (RTO) and Recovery Point Objectives (RPO) for each service shall be defined and regularly tested through automated chaos engineering experiments.
+
+---
+
+### A.6 People Controls
+
+---
+
+#### **A.6.3 Information security awareness, education and training**
+
+*   **Objective:** To ensure all employees and contractors are aware of their information security responsibilities.
+*   **Policy Statement:** Developers and operators building autonomous agents and Infrastructure-as-Code (IaC) must undergo specific training on the security implications of automated decision-making. Awareness of "Policy as Code" and the security guardrails within the governance repository is mandatory for all contributors to the Kalles Buss platform.
+
+---
+
+### A.7 Physical Controls
+
+---
+
+#### **A.7.8 Equipment siting and protection**
+
+*   **Objective:** To protect equipment from physical and environmental threats and unauthorized access.
+*   **Policy Statement:** Physical edge devices operating within the Kalles Buss fleet (e.g., driver tablets, GPS trackers, ticket validators) must be physically secured against tampering. Devices must be provisioned with minimal local state, strongly authenticated to the central event bus, and encrypted at rest to protect localized data in the event of theft or loss.
+
+---
+
+#### **A.7.14 Secure disposal or re-use of equipment**
+
+*   **Objective:** To ensure that equipment containing storage media is verified to be free of sensitive data and licensed software prior to disposal or re-use.
+*   **Policy Statement:** Any physical hardware decommissioned from the fleet (e.g., bus telematics systems, driver interfaces) must undergo a certified cryptographic wipe or physical destruction process. Automated logging must verify the decommissioning of the device's identity from the platform's asset inventory before disposal.
 
 ---
 
@@ -82,7 +125,14 @@ The selected controls represent the most critical security considerations for ou
 #### **A.8.5 Secure authentication**
 
 *   **Objective:** To verify the identity of users, processes, or devices to ensure that only authorized entities can access systems and information.
-*   **Policy Statement:** All actors (human and machine) interacting with the Kalles Buss platform must authenticate using strong, managed identities (e.g., OAuth 2.0, OpenID Connect, Managed Identities). The use of static credentials like passwords or API keys in code or configuration is strictly prohibited. All credentials must be centrally managed and rotated automatically.
+*   **Policy Statement:** All actors (human and machine) interacting with the Kalles Buss platform must authenticate using strong, managed identities (e.g., OAuth 2.0, OpenID Connect, Managed Identities). Autonomous agents and microservices must utilize Workload Identities (e.g., SPIFFE) to ensure that every action on the event bus is cryptographically tied to a specific agent version. The use of static credentials like passwords or API keys in code or configuration is strictly prohibited. All credentials must be centrally managed and rotated automatically.
+
+---
+
+#### **A.8.8 Management of technical vulnerabilities**
+
+*   **Objective:** To obtain information about technical vulnerabilities of information systems being used, evaluate the organization's exposure to such vulnerabilities, and take appropriate measures to address the associated risk.
+*   **Policy Statement:** As a system built on open-source software (GPL-3.0), Kalles Buss shall employ automated Software Composition Analysis (SCA) to continuously monitor dependencies. Automated dependency updates (e.g., Dependabot, Renovate) must be integrated into the CI/CD pipeline. Critical vulnerabilities (CVEs) must trigger automated alerts and be patched within strictly defined Service Level Agreements (SLAs).
 
 ---
 
@@ -90,6 +140,13 @@ The selected controls represent the most critical security considerations for ou
 
 *   **Objective:** To manage the secure configuration of technology to prevent unauthorized changes and ensure system integrity.
 *   **Policy Statement:** The entire configuration of the Kalles Buss platform—including infrastructure, services, networks, and security settings—shall be defined as code (IaC). All changes must go through a version-controlled, peer-reviewed approval process. The live configuration state will be continuously monitored against the defined state in the repository, and any drift must be automatically remediated.
+
+---
+
+#### **A.8.11 Data masking**
+
+*   **Objective:** To ensure that sensitive data is appropriately protected in accordance with legal, statutory, regulatory, and contractual requirements.
+*   **Policy Statement:** Automated data masking and anonymization must be enforced at the event bus layer before data is written to data lakes or analytics platforms. This is critical for HR/Personal data and passenger information to ensure strict adherence to GDPR. Unmasked `Confidential` data is only accessible via temporary, audited, just-in-time (JIT) elevation by authorized systems.
 
 ---
 
