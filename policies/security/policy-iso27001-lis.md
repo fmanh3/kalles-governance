@@ -50,21 +50,21 @@ The selected controls represent the most critical security considerations for ou
 #### **A.5.19 Information security in supplier relationships**
 
 *   **Objective:** To agree on and document the information security requirements for mitigating the risks associated with supplier's access to the organization's assets.
-*   **Policy Statement:** Kalles Buss relies heavily on external data providers (e.g., Trafiklab, Samtrafiken, SL) and physical infrastructure partners (e.g., external depots, charging stations). All integrations must employ zero-trust principles. Agents must validate and sanitize all incoming external data and maintain fallback mechanisms for critical operational data to ensure resilience against third-party compromise or outages.
+*   **Policy Statement:** Kalles Buss relies heavily on external data providers (e.g., Trafiklab, Samtrafiken, SL) and physical infrastructure partners (e.g., external depots, charging stations). All integrations must employ zero-trust principles. To comply with the **NIS2 Directive**, the platform must employ automated monitoring of vendor cyber health and conduct continuous third-party risk assessments across the entire software and hardware supply chain. Agents must validate and sanitize all incoming external data and maintain fallback mechanisms for critical operational data to ensure resilience against third-party compromise or outages.
 
 ---
 
 #### **A.5.23 Information security for use of cloud services**
 
 *   **Objective:** To establish requirements for securing the use of cloud services to protect the organization's information.
-*   **Policy Statement:** All cloud services used by the Kalles Buss platform must be approved and configured according to a defined security baseline, managed via Infrastructure as Code (IaC). The use of cloud services will be continuously monitored for compliance with this baseline, and any deviations must trigger an automated alert or remediation action. Shared responsibility models with cloud providers will be explicitly documented for each service.
+*   **Policy Statement:** All cloud services used by the Kalles Buss platform must be approved and configured according to a defined security baseline, managed via Infrastructure as Code (IaC). The use of cloud services will be continuously monitored for compliance with this baseline, and any deviations must trigger an automated alert or remediation action. Shared responsibility models with cloud providers will be explicitly documented for each service. To ensure compliance with the **EU Data Act** (prevention of vendor lock-in), the platform must maintain and regularly test a *Cloud Exit Strategy*, leveraging cloud-agnostic deployment configurations where feasible.
 
 ---
 
 #### **A.5.24 Information security incident management planning and preparation**
 
 *   **Objective:** To plan and prepare for managing information security incidents effectively.
-*   **Policy Statement:** Automated incident response playbooks shall be defined as code. In the event of a compromised or malfunctioning autonomous agent, the platform must support automated "kill switches" to isolate the rogue agent and instantly revert affected operations to "Shadow Mode" or a known-good baseline, minimizing impact on the physical bus fleet.
+*   **Policy Statement:** Automated incident response playbooks shall be defined as code. In the event of a compromised or malfunctioning autonomous agent, the platform must support automated "kill switches" to isolate the rogue agent and instantly revert affected operations to "Shadow Mode" or a known-good baseline, minimizing impact on the physical bus fleet. Furthermore, to comply with the **NIS2 Directive**, the platform must automatically compile and route preliminary incident reports for significant cyber threats or incidents to the designated national authority (e.g., MSB in Sweden) within **24 hours** of detection.
 
 ---
 
@@ -72,6 +72,16 @@ The selected controls represent the most critical security considerations for ou
 
 *   **Objective:** To ensure the availability of information and communication technology (ICT) and the resilience of systems to disruption.
 *   **Policy Statement:** The Kalles Buss platform will be designed for high availability and disaster recovery, leveraging the resilience capabilities of the underlying cloud provider. Critical services will be deployed across multiple availability zones. Recovery Time Objectives (RTO) and Recovery Point Objectives (RPO) for each service shall be defined and regularly tested through automated chaos engineering experiments.
+
+---
+
+#### **A.5.31 Legal, statutory, regulatory and contractual requirements**
+
+*   **Objective:** To avoid breaches of legal, statutory, regulatory, or contractual obligations related to information security and of any security requirements.
+*   **Policy Statement:** The Kalles Buss platform must structurally enforce compliance with key European directives:
+    *   **EU Data Act:** The platform shall implement secure, standardized APIs for the real-time sharing of vehicle telemetry and operational data with authorized third parties (e.g., SL, maintenance partners, or competitors where mandated) to ensure data portability and prevent vendor lock-in.
+    *   **GDPR:** Technical enforcement of data protection shall be directly linked to the broader compliance governance defined in `policies/compliance/policy-gdpr.md`.
+    *   **NIS2:** As a critical infrastructure operator (public transport), all agents and systems must adhere to the elevated security and reporting mandates outlined within this LIS.
 
 ---
 
@@ -186,7 +196,7 @@ The selected controls represent the most critical security considerations for ou
 #### **A.8.25 Secure development lifecycle**
 
 *   **Objective:** To embed security activities and controls throughout the entire system and software development lifecycle.
-*   **Policy Statement:** Security shall be integrated into every phase of the Kalles Buss development lifecycle ('''Shift Left'''). This includes mandatory threat modeling for new services, automated security scanning (SAST, DAST, SCA) in CI/CD pipelines, and security-focused code review checklists. All development activities must adhere to the processes defined in the `kalles-governance/policies/development-process/` directory.
+*   **Policy Statement:** Security shall be integrated into every phase of the Kalles Buss development lifecycle ('''Shift Left'''). This includes mandatory threat modeling for new services, automated security scanning (SAST, DAST, SCA) in CI/CD pipelines, and security-focused code review checklists. Furthermore, to comply with **GDPR (Article 25)**, **Privacy by Design and by Default** must be embedded into the engineering process. Event bus schemas must enforce data minimization (collecting only what is strictly necessary) and automated data retention policies (anonymization or deletion when the operational need expires). All development activities must adhere to the processes defined in the `kalles-governance/policies/development-process/` directory.
 
 ---
 
