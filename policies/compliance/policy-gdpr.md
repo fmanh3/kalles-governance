@@ -10,6 +10,10 @@ This policy applies to all autonomous agents, human developers, and software com
 ## 2. Privacy by Design and by Default (Article 25)
 All software developed for Kalles Buss must embed privacy into its architecture. 
 
+### 2.0 Data Protection Impact Assessment (DPIA)
+*   **Constraint:** Introducing new processing of `Confidential` or `Strictly Confidential` data (especially driver telematics and HR health/rest logs) carries high systemic risk.
+*   **Implementation:** Before any new service, autonomous agent, or major feature is merged into the `main` branch, the CI/CD pipeline must enforce a check for a completed Data Protection Impact Assessment (DPIA). If the service touches PII, the DPIA must be documented and approved in the governance repository.
+
 ### 2.1 Data Minimization on the Event Bus
 *   **Constraint:** The distributed event bus is the central nervous system of Kalles Buss. Personally Identifiable Information (PII) must **not** be broadcasted in plain text on the event bus unless absolutely necessary for the consuming domain.
 *   **Implementation:** Systems must favor the "Claim-Check" pattern or publish opaque reference IDs (e.g., `DriverId`) instead of raw PII (e.g., `DriverName`, `SocialSecurityNumber`). Only authorized services may resolve these IDs to real identities via secure, audited APIs.
@@ -21,6 +25,10 @@ All software developed for Kalles Buss must embed privacy into its architecture.
 ### 2.3 Automated Data Retention and Deletion
 *   **Constraint:** Data must not be kept longer than necessary for its designated purpose.
 *   **Implementation:** All data stores (databases, caches, data lakes) containing PII must implement automated Time-To-Live (TTL) policies or background eviction jobs. For example, driver geolocation telemetry must be aggregated and anonymized after the operational shift ends, retaining only non-identifiable metrics for historical analysis.
+
+### 2.4 Purpose Limitation & Legal Basis Metadata
+*   **Constraint:** PII collected for one purpose must not be repurposed by downstream consumers without a valid legal basis.
+*   **Implementation:** Any event payload that resolves to PII must include explicit schema metadata defining its *Purpose* and *Legal Basis* (e.g., `legal_basis: "statutory_obligation"`, `purpose: "traffic_safety"`). Autonomous agents and services must programmatically validate this metadata before ingesting and processing the data to prevent unauthorized scope creep.
 
 ## 3. Supporting Data Subject Rights (Articles 15-22)
 The software platform must programmatically support the rights of the information holders.
@@ -49,6 +57,7 @@ The software platform must programmatically support the rights of the informatio
 *   **Data Types:** Surveillance footage, incident reports (accidents, lost and found).
 *   **Constraint:** Passenger data is minimal. Any ingestion of passenger PII must be strictly isolated. Video surveillance from buses must be heavily encrypted at the edge (on the bus) and automatically purged after a short statutory timeframe (e.g., 24-72 hours) unless preserved and exported for an active law enforcement investigation.
 
-## 5. Audit & Observability
+## 5. Audit, Observability, and Breach Notification
 *   **Requirement:** Every read, modification, or deletion of `Confidential` or `Strictly Confidential` PII must be logged in an immutable audit trail.
 *   **Constraint:** Audit logs themselves must be structurally scrubbed of PII. They should log *who* accessed *whose* data (using opaque IDs), *when*, and the *business system justification*, without logging the actual sensitive payload.
+*   **Breach Notification (Article 33):** The observability stack must automatically correlate anomalous data access patterns (e.g., mass-export of PII) and generate high-priority alerts. The system must support generating the necessary forensic data to notify the local Data Protection Authority (e.g., IMY) within the **72-hour** mandatory window following the discovery of a personal data breach.
