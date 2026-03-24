@@ -100,6 +100,22 @@ The selected controls represent the most critical security considerations for ou
 
 ---
 
+#### **A.8.16 Monitoring activities**
+
+*   **Objective:** To monitor networks, systems, and applications for anomalous behavior and to ensure the effectiveness of information security controls.
+*   **Policy Statement:** The Kalles Buss platform must be continuously monitored across multiple dimensions to ensure security, operational stability, and availability. All monitoring data shall be collected into a central system capable of analysis, correlation, and alerting.
+*   **Centralized Logging & Metrics:** All services and infrastructure components must emit structured logs (e.g., JSON) and key performance metrics to a central observability platform.
+*   **Security Monitoring:** The platform must actively monitor, log, and alert on security-related events, including but not limited to authentication failures, authorization denials, potential intrusion attempts (e.g., port scanning), and suspected data exfiltration.
+*   **Operational & Performance Monitoring:** System health and performance indicators (e.g., request latency, error rates, resource utilization) must be continuously measured to identify trends, predict future issues, and ensure adherence to Service Level Objectives (SLOs).
+*   **Troubleshooting & Diagnostics:** All unhandled application exceptions must generate a log event containing a full, correlated stack trace. Distributed tracing must be implemented to allow the complete lifecycle of a transaction to be visualized across all involved services.
+*   **Automated Alerting:** An automated alerting system must be configured to immediately notify the responsible domain (agent or team) via a secure channel upon detection of critical security incidents, performance degradation, or system failures.
+*   **Log Retention:** A log retention policy must be enforced automatically based on the data type:
+    *   Security and audit logs: Minimum 365 days.
+    *   Application and debug logs: Minimum 30 days.
+    *   Aggregated performance metrics: Minimum 1 year.
+
+---
+
 #### **A.8.24 Use of cryptography**
 
 *   **Objective:** To ensure the proper and effective use of cryptography to protect the confidentiality, integrity, and availability of information.
