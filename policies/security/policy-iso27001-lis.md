@@ -100,10 +100,20 @@ The selected controls represent the most critical security considerations for ou
 
 ---
 
+#### **A.8.24 Use of cryptography**
+
+*   **Objective:** To ensure the proper and effective use of cryptography to protect the confidentiality, integrity, and availability of information.
+*   **Policy Statement:** Cryptographic controls shall be applied based on the classification of data. All cryptographic standards, algorithms, and key lengths must be approved by the security governance team and defined herein.
+*   **Encryption of Data in Transit:** All network traffic, both on internal and external networks, must be encrypted using at least Transport Layer Security (TLS) 1.2, with TLS 1.3 being the preferred standard. Internal service-to-service communication must be secured using a service mesh that enforces mutual TLS (mTLS).
+*   **Encryption of Data at Rest:** All data classified as `Internal` or higher that is stored persistently (e.g., in databases, object storage, or on virtual disks) must be encrypted using at least AES-256 or an equivalent strong algorithm.
+*   **Cryptographic Key Management:** All cryptographic keys are critical assets and must be managed exclusively through an approved, centralized Key Management Service (KMS), such as Azure Key Vault or AWS KMS. Keys must never be stored in source code, configuration files, or logs. All keys must have a defined lifecycle, including automated rotation policies appropriate for their usage and data classification.
+
+---
+
 #### **A.8.25 Secure development lifecycle**
 
 *   **Objective:** To embed security activities and controls throughout the entire system and software development lifecycle.
-*   **Policy Statement:** Security shall be integrated into every phase of the Kalles Buss development lifecycle (''Shift Left''). This includes mandatory threat modeling for new services, automated security scanning (SAST, DAST, SCA) in CI/CD pipelines, and security-focused code review checklists. All development activities must adhere to the processes defined in the `kalles-governance/policies/development-process/` directory.
+*   **Policy Statement:** Security shall be integrated into every phase of the Kalles Buss development lifecycle ('''Shift Left'''). This includes mandatory threat modeling for new services, automated security scanning (SAST, DAST, SCA) in CI/CD pipelines, and security-focused code review checklists. All development activities must adhere to the processes defined in the `kalles-governance/policies/development-process/` directory.
 
 ---
 
