@@ -45,7 +45,6 @@ module "finance_db" {
   project_id   = var.project_id
   region       = var.region
   db_name      = "kalles-finance"
-  network_name = google_compute_network.kalles_vpc.name
 }
 
 module "hr_db" {
@@ -54,13 +53,4 @@ module "hr_db" {
   project_id   = var.project_id
   region       = var.region
   db_name      = "kalles-hr"
-  network_name = google_compute_network.kalles_vpc.name
-}
-
-# --------------------------------------------------------------------------
-# Zero-Trust VPC Network (NIS2 Requirement)
-# --------------------------------------------------------------------------
-resource "google_compute_network" "kalles_vpc" {
-  name                    = "kalles-zero-trust-vpc"
-  auto_create_subnetworks = false
 }
