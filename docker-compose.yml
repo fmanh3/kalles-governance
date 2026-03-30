@@ -69,7 +69,7 @@ services:
   # --------------------------------------------------------------------------
   kalles-finance:
     build:
-      context: .
+      context: ..
       dockerfile: kalles-finance/Dockerfile
     container_name: kalles-finance-app
     depends_on:
@@ -88,7 +88,7 @@ services:
 
   kalles-hr:
     build:
-      context: .
+      context: ..
       dockerfile: kalles-hr/Dockerfile
     container_name: kalles-hr-app
     depends_on:
@@ -107,7 +107,7 @@ services:
 
   kalles-traffic:
     build:
-      context: .
+      context: ..
       dockerfile: kalles-traffic/Dockerfile
     container_name: kalles-traffic-app
     depends_on:
