@@ -174,7 +174,7 @@ resource "google_cloud_run_v2_service" "hr_service" {
     service_account = google_service_account.runtime_sa.email
     
     containers {
-      image = "${var.region}-docker.pkg.dev/${var.project_id}/kalles-buss/kalles-hr:live"
+      image = "${var.region}-docker.pkg.dev/${var.project_id}/kalles-buss/kalles-hr:latest"
       
       ports {
         container_port = 8080
