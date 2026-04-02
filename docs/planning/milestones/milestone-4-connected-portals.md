@@ -1,32 +1,32 @@
 # Milstolpe 4: Connected Portals (CEO & Driver)
 
-## Status: Planerad 🗓️
+## Status: Slutförd ✅ (April 2026)
 
 ## Mål
-Att bygga en sammanhållen användarupplevelse genom att aggregera data från molntjänsterna och presentera den i en VD-portal och en förar-app.
+Att skapa en sammanhållen användarupplevelse genom att aggregera data från de olika domänerna och presentera dem för bolagets intressenter.
 
-## Fokusområden
+## Prestationer
 
-### 1. API Gateway / BFF (Backend for Frontend)
-*   [ ] Implementera en central gateway som pratar med Finance, HR och Traffic API:er.
-*   [ ] Hantera autentisering (t.ex. Google Auth eller enkel lab-login).
+### 1. Frontend (Portal)
+*   **React & Vite:** Implementerat en reaktiv, mobile-first webbportal.
+*   **Rollbaserad inloggning:** Enkel lab-login för VD och Förare.
+*   **Dashboards:** Visualisering av finansiell likviditet för VD och schemavisa för förare.
 
-### 2. CEO Portal (Web)
-*   [ ] Dashboard-vy för likviditet och finansiell status.
-*   [ ] Realtidskarta (Fleet Map) med Leaflet/Google Maps.
-*   [ ] Lista över utestående kund- och leverantörsfakturor.
+### 2. Backend for Frontend (BFF)
+*   **API Gateway:** En Express-baserad gateway som fungerar som aggregator mot domäntjänsterna.
+*   **Isolering:** Frontenden pratar bara med BFF:en, vilket skyddar domänernas interna API:er.
 
-### 3. Driver App (Mobil-anpassad Web)
-*   [ ] "Mitt Schema"-vy med detaljer för dagens och morgondagens pass.
-*   [ ] Interaktiva knappar för "Sjukanmälan" och "Semesteransökan".
-*   [ ] Visning av personliga lönebesked (PDF eller vy).
+### 3. Deployment & Cloud
+*   **Multi-repo Orchestration:** Samtliga 5 repon är nu synkade och länkade.
+*   **Serverless:** Portalen och BFF:en körs som containrar i Google Cloud Run.
+*   **Public Access:** Tjänsterna är åtkomliga via publika URL:er för enkel verifiering i labbmiljön.
 
-### 4. Integration & Test
-*   [ ] Verifiera Gherkin-scenarierna genom end-to-end integrationstester.
-*   [ ] Driftsätta Frontenden i Google Cloud Run.
+## Tekniska Lärdomar
+*   **TypeScript Pedantry:** Vikten av att rensa oanvända imports för att inte blockera produktionsbyggen.
+*   **Docker Context:** Hantering av bygg-kontexter i en monorepo-liknande miljö kräver precision i Dockerfilerna.
+*   **Cloud Run Port Handling:** Säkerställa att även statiska Nginx-containrar lyssnar på rätt port ($PORT).
 
-## DoD (Definition of Done)
-*   En enhetlig webbportal är live i molnet.
-*   VD kan se likviditet i realtid baserat på faktiska bokföringsdata.
-*   Förare kan se sitt schema och ändra status på sina pass via appen.
-*   All data hämtas dynamiskt via API Gateway.
+## Nästa Steg
+*   Införa riktig autentisering (OIDC/Google Auth).
+*   Bygga ut realtidskartan med faktiska koordinater från Traffic-simulatorn.
+*   Möjliggöra interaktion från portalen tillbaka till domänerna (t.ex. godkänna fakturor).

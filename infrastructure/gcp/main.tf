@@ -225,6 +225,76 @@ resource "google_cloud_run_v2_service" "hr_service" {
 }
 
 # --------------------------------------------------------------------------
+# Cloud Run: BFF Gateway (Customer Success)
+# --------------------------------------------------------------------------
+resource "google_cloud_run_v2_service" "bff_gateway" {
+  name     = "kalles-bff"
+  location = var.region
+  ingress  = "INGRESS_TRAFFIC_ALL"
+
+  template {
+    service_account = google_service_account.runtime_sa.email
+    
+    containers {
+      image = "${var.region}-docker.pkg.dev/${var.project_id}/kalles-buss/kalles-bff:latest"
+      
+      ports {
+        container_port = 8080
+      }
+
+      env {
+        name  = "FINANCE_SERVICE_URL"
+        value = google_cloud_run_v2_service.finance_service.uri
+      }
+      env {
+        name  = "HR_SERVICE_URL"
+        value = google_cloud_run_v2_service.hr_service.uri
+      }
+      env {
+        name  = "TRAFFIC_SERVICE_URL"
+        value = google_cloud_run_v2_service.traffic_simulator.uri
+      }
+    }
+  }
+}
+
+# --------------------------------------------------------------------------
+# Cloud Run: CEO & Driver Portal (Frontend)
+# --------------------------------------------------------------------------
+resource "google_cloud_run_v2_service" "portal_frontend" {
+  name     = "kalles-portal"
+  location = var.region
+  ingress  = "INGRESS_TRAFFIC_ALL"
+
+  template {
+    containers {
+      image = "${var.region}-docker.pkg.dev/${var.project_id}/kalles-buss/kalles-portal:latest"
+      
+      ports {
+        container_port = 8080
+      }
+    }
+  }
+}
+
+# --------------------------------------------------------------------------
+# Public Access (Lab Environment Only)
+# --------------------------------------------------------------------------
+resource "google_cloud_run_v2_service_iam_member" "portal_public" {
+  location = google_cloud_run_v2_service.portal_frontend.location
+  name     = google_cloud_run_v2_service.portal_frontend.name
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}
+
+resource "google_cloud_run_v2_service_iam_member" "bff_public" {
+  location = google_cloud_run_v2_service.bff_gateway.location
+  name     = google_cloud_run_v2_service.bff_gateway.name
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}
+
+# --------------------------------------------------------------------------
 # Cloud SQL: Databases per Domain
 # --------------------------------------------------------------------------
 module "finance_db" {
