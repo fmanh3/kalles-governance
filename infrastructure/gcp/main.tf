@@ -11,10 +11,6 @@ terraform {
       version = "~> 5.0"
     }
   }
-
-  # NOTE: Backend state should be stored in a GCS bucket with versioning 
-  # enabled to comply with NIS2 audit & recovery requirements.
-  # For local dev bootstrap, we leave it local until the bucket is created.
 }
 
 provider "google" {
@@ -34,6 +30,33 @@ module "event_bus" {
   source = "./modules/pubsub"
   
   project_id = var.project_id
+}
+
+# --------------------------------------------------------------------------
+# Cloud SQL: Databases per Domain
+# --------------------------------------------------------------------------
+module "finance_db" {
+  source = "./modules/database"
+
+  project_id   = var.project_id
+  region       = var.region
+  db_name      = "kalles-finance"
+}
+
+module "hr_db" {
+  source = "./modules/database"
+
+  project_id   = var.project_id
+  region       = var.region
+  db_name      = "kalles-hr"
+}
+
+module "traffic_db" {
+  source = "./modules/database"
+
+  project_id   = var.project_id
+  region       = var.region
+  db_name      = "kalles-traffic"
 }
 
 # --------------------------------------------------------------------------
@@ -86,8 +109,12 @@ resource "google_cloud_run_v2_service" "traffic_simulator" {
     service_account = google_service_account.runtime_sa.email
     
     containers {
-      image = "${var.region}-docker.pkg.dev/${var.project_id}/kalles-buss/kalles-traffic:latest"
+      image = "${var.region}-docker.pkg.dev/${var.project_id}/kalles-buss/kalles-traffic:v2"
       
+      ports {
+        container_port = 8080
+      }
+
       env {
         name  = "GOOGLE_CLOUD_PROJECT"
         value = var.project_id
@@ -95,6 +122,38 @@ resource "google_cloud_run_v2_service" "traffic_simulator" {
       env {
         name  = "NODE_ENV"
         value = "production"
+      }
+      env {
+        name  = "DB_HOST"
+        value = "/cloudsql/${module.traffic_db.connection_name}"
+      }
+      env {
+        name  = "DB_PORT"
+        value = "5432"
+      }
+      env {
+        name  = "DB_USER"
+        value = module.traffic_db.db_user
+      }
+      env {
+        name  = "DB_PASSWORD"
+        value = module.traffic_db.db_password
+      }
+      env {
+        name  = "DB_NAME"
+        value = "kalles-traffic"
+      }
+
+      volume_mounts {
+        name       = "cloudsql"
+        mount_path = "/cloudsql"
+      }
+    }
+
+    volumes {
+      name = "cloudsql"
+      cloud_sql_instance {
+        instances = [module.traffic_db.connection_name]
       }
     }
   }
@@ -112,7 +171,7 @@ resource "google_cloud_run_v2_service" "finance_service" {
     service_account = google_service_account.runtime_sa.email
     
     containers {
-      image = "${var.region}-docker.pkg.dev/${var.project_id}/kalles-buss/kalles-finance:latest"
+      image = "${var.region}-docker.pkg.dev/${var.project_id}/kalles-buss/kalles-finance:v2"
       
       ports {
         container_port = 8080
@@ -128,7 +187,7 @@ resource "google_cloud_run_v2_service" "finance_service" {
       }
       env {
         name  = "DB_HOST"
-        value = "127.0.0.1" # Cloud Run uses a built-in proxy for localhost
+        value = "/cloudsql/${module.finance_db.connection_name}"
       }
       env {
         name  = "DB_PORT"
@@ -174,7 +233,7 @@ resource "google_cloud_run_v2_service" "hr_service" {
     service_account = google_service_account.runtime_sa.email
     
     containers {
-      image = "${var.region}-docker.pkg.dev/${var.project_id}/kalles-buss/kalles-hr:latest"
+      image = "${var.region}-docker.pkg.dev/${var.project_id}/kalles-buss/kalles-hr:v2"
       
       ports {
         container_port = 8080
@@ -190,7 +249,7 @@ resource "google_cloud_run_v2_service" "hr_service" {
       }
       env {
         name  = "DB_HOST"
-        value = "127.0.0.1"
+        value = "/cloudsql/${module.hr_db.connection_name}"
       }
       env {
         name  = "DB_PORT"
@@ -294,21 +353,23 @@ resource "google_cloud_run_v2_service_iam_member" "bff_public" {
   member   = "allUsers"
 }
 
-# --------------------------------------------------------------------------
-# Cloud SQL: Databases per Domain
-# --------------------------------------------------------------------------
-module "finance_db" {
-  source = "./modules/database"
-
-  project_id   = var.project_id
-  region       = var.region
-  db_name      = "kalles-finance"
+resource "google_cloud_run_v2_service_iam_member" "finance_public" {
+  location = google_cloud_run_v2_service.finance_service.location
+  name     = google_cloud_run_v2_service.finance_service.name
+  role     = "roles/run.invoker"
+  member   = "allUsers"
 }
 
-module "hr_db" {
-  source = "./modules/database"
+resource "google_cloud_run_v2_service_iam_member" "hr_public" {
+  location = google_cloud_run_v2_service.hr_service.location
+  name     = google_cloud_run_v2_service.hr_service.name
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}
 
-  project_id   = var.project_id
-  region       = var.region
-  db_name      = "kalles-hr"
+resource "google_cloud_run_v2_service_iam_member" "traffic_public" {
+  location = google_cloud_run_v2_service.traffic_simulator.location
+  name     = google_cloud_run_v2_service.traffic_simulator.name
+  role     = "roles/run.invoker"
+  member   = "allUsers"
 }
