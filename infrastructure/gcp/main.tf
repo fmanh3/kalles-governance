@@ -1,10 +1,7 @@
 terraform {
   required_version = ">= 1.5.0"
   required_providers {
-    google = { 
-      source = "hashicorp/google"
-      version = "~> 5.0" 
-    }
+    google = { source = "hashicorp/google"; version = "~> 5.0" }
   }
 }
 
@@ -13,6 +10,7 @@ provider "google" {
   region  = var.region
 }
 
+# --- DATABASER ---
 module "finance_db" { 
   source = "./modules/database"
   project_id = var.project_id
@@ -34,10 +32,19 @@ module "traffic_db" {
   db_name = "kalles-traffic"
 }
 
+module "depot_db" { 
+  source = "./modules/database"
+  project_id = var.project_id
+  region = var.region
+  db_name = "kalles-energy-depot"
+}
+
+# --- VARIABLER ---
 variable "project_id" { default = "joakim-hansson-lab" }
 variable "region" { default = "europe-west1" }
 
-output "hr_db_password" {
-  value = module.hr_db.db_password
-  sensitive = true
-}
+# --- OUTPUTS ---
+output "finance_db_host" { value = module.finance_db.db_host }
+output "hr_db_host" { value = module.hr_db.db_host }
+output "traffic_db_host" { value = module.traffic_db.db_host }
+output "depot_db_host" { value = module.depot_db.db_host }

@@ -1,19 +1,10 @@
-# Energy & Depot Domain: Förmågekartläggning (v1.0)
+# Depot & Maintenance - Capabilities
 
-## Vision
-Att garantera maximal fordonsberedskap till lägsta möjliga energikostnad genom intelligent styrning av depåinfrastruktur och laddningscykler.
+## 1. Domain Purpose
+The Depot domain manages the physical assets of the company, including the vehicle fleet, charging infrastructure, and spare parts inventory. It handles the lifecycle of physical maintenance and supplier catalogs.
 
-## Kärnförmågor (Capabilities)
-
-### 1. Energy Management (Energistyrning)
-*   **Spot-price Optimization:** Anpassning av laddningsmönster baserat på realtidspriser från Nordpool.
-*   **Load Balancing:** Balansering av effektuttaget i depån för att undvika dyra effekttoppar (Peak Shaving).
-*   **V2G Readiness:** (Framtida) Möjlighet att sälja tillbaka batterikapacitet till nätet vid extrema pristoppar.
-
-### 2. Depot Operations (Depådrift)
-*   **Physical State Machine:** Håller reda på var bussen står fysiskt (Ficka A-12, Tvätt, Verkstad).
-*   **Ready-for-Service:** Validering av att bussen är städad, laddad och säkerhetskontrollerad inför utsläpp.
-
-### 3. Charger Gateway (Yttre Ring)
-*   **OCPP Integration:** Kommunikation med de fysiska laddstationerna.
-*   **Handshake Monitoring:** Säkerställa att kontakten mellan buss och laddare är stabil.
+## 2. Core Capabilities
+* **Asset Management:** Full CRUD operations for physical assets, mapping physical buses to predefined Asset Models and BOMs (Bill of Materials).
+* **Work Order Execution:** Translating damage reports into actionable repair tasks for mechanics.
+* **Supply Chain & Inventory:** Managing internal item catalogs and dynamically mapping them to external supplier catalogs.
+* **Dynamic Procurement (AI):** Autonomously selecting suppliers for spare parts based on a calculated trade-off between lead time and price to ensure traffic readiness.
